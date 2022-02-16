@@ -13,6 +13,9 @@
 #include <omp.h>
 #include <fcntl.h>
 
+#define N 1000
+#define BUFSIZE 1024                 // Max length of buffer
+
 int checkipaddress(char *a)
 {
     int error=0; 
@@ -61,17 +64,20 @@ int checkipaddress(char *a)
             return error; 
         }
         else
+        {
+            printf("IP address looks valid! The program will try to connect to that device...\n");
+            error=0;
             return error;
+        }
     }
         
 }
 
 int communication(int x, char *b)
 {
-    
-    
-    
+   
 }
+    
 
 int main(int argc, char *argv[])
 {
@@ -82,6 +88,7 @@ int main(int argc, char *argv[])
     int run_input=1; // beolvasáskor mikor kéri a számot annak a futásának az irányítására
     int run_ipchecking=1; //ip cím ellenőrzés céljából
     char ip_address[30]; //ip cím itt van eltárolva ellenőrzés
+    int port=0; // portnak a száma melyen a kommunikációt fogja végezni
     
     //end of variables//
     
@@ -110,13 +117,14 @@ int main(int argc, char *argv[])
     switch(connection_type)
     {
         case 1:
-            printf("Your chosen connection type is Telnet!");
+            printf("Your chosen connection type is Telnet!\n");
+            port=23;
         break;
         case 2:
-            printf("Your chosen connection type is SSH!");
+            printf("Your chosen connection type is SSH!\n");
         break;
         case 3:
-            printf("Your chosen connection type is Console!");
+            printf("Your chosen connection type is Console!\n");
         break;
       
       default :
@@ -128,11 +136,12 @@ int main(int argc, char *argv[])
         scanf("%s",ip_address);
         printf("Checking IP address...\n");
         int sv=checkipaddress(ip_address);
+        printf("%d",sv);
         if(sv==0)
             run_ipchecking=0;
     }
     
-    
+    //communication(port,ip_address);
     
     
     return 0;
