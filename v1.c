@@ -50,6 +50,10 @@ int checkipaddress(char *a)
         sv=atoi(token);
         if(sv>255)
             error++;
+        token=strtok(NULL,".");
+        sv=atoi(token);
+        if(sv>255)
+            error++;
         
         if(error!=0)
         {
@@ -62,6 +66,12 @@ int checkipaddress(char *a)
         
 }
 
+int communication(int x, char *b)
+{
+    
+    
+    
+}
 
 int main(int argc, char *argv[])
 {
@@ -123,7 +133,7 @@ int main(int argc, char *argv[])
     }
     
     
-    //checking ip address
+    
     
     return 0;
 }
