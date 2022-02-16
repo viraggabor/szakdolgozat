@@ -15,9 +15,52 @@
 
 int checkipaddress(char *a)
 {
-    
+    int error=0; 
+    int dot_cnt=0;// pontokat számoljuk meg tehát ha a pontok száma nem 3. akkor érvénytelen a cím
+    char *token; // karakter tömb splitelésekor lesz felhasználva
+    for(int i=0;i<strlen(a);i++)
+    {
+        char sv=a[i];
+        if(sv=='.')
+            dot_cnt++;
+        if(sv!='1' && sv!='2' && sv!='3' && sv!='4' && sv!='5' && sv!='6' && sv!='7' && sv!='8' && sv!='9' && sv!='0' && sv!='.')
+        {
+            error=1;
+            fprintf(stderr,"Invalid IP address!\n");
+            return error;
+        }
+    }
+    if(dot_cnt!=3)
+    {
+        error=1;
+        fprintf(stderr,"Invalid IP address!\n");
+        return error;
+    }
+    else
+    {        
+        token=strtok(a,".");
+        int sv=atoi(token);
+        if(sv>255)
+            error++;
+        token=strtok(NULL,".");
+        sv=atoi(token);
+        if(sv>255)
+            error++;    
+        token=strtok(NULL,".");
+        sv=atoi(token);
+        if(sv>255)
+            error++;
+        
+        if(error!=0)
+        {
+            fprintf(stderr,"Invalid IP address!\n");
+            return error; 
+        }
+        else
+            return error;
+    }
+        
 }
-
 
 
 int main(int argc, char *argv[])
@@ -69,10 +112,16 @@ int main(int argc, char *argv[])
       default :
          fprintf(stderr,"Invalid input!\n");
     }
-    while
-    printf("Enter the target IP address example(192.168.10.69): ");
-    scanf("%s",ip_address);
-    printf("%s\n",ip_address);
+    while(run_ipchecking)
+    {
+        printf("Enter the target IP address example(192.168.10.69): ");
+        scanf("%s",ip_address);
+        printf("Checking IP address...\n");
+        int sv=checkipaddress(ip_address);
+        if(sv==0)
+            run_ipchecking=0;
+    }
+    
     
     //checking ip address
     
