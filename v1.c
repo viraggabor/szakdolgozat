@@ -75,7 +75,73 @@ int checkipaddress(char *a)
 
 int communication(int x, char *b)
 {
-   
+    //Ez a kódrész Varga Imre tanár úr jegyzeteiben megtalálható a minimal socket program
+    
+    
+    /************************** Declarations ********************/
+    int s;                            // socket ID
+    int flag;                         // transmission flag
+    int bytes;                        // received/sent bytes
+    int err;                          // error code
+    unsigned int server_size;         // length of the sockaddr_in server
+    char on;                          // sockopt option
+    char buffer[BUFSIZE];             // datagram buffer area
+    struct sockaddr_in server;        // address of server
+
+    /********************** Initialization **********************/
+    on   = 1;
+    flag = 0;
+    server.sin_family      = AF_INET;
+    server.sin_addr.s_addr = inet_addr(b);
+    server.sin_port        = htons(x);
+    server_size = sizeof server;
+
+    /********************** Creating socket **********************/
+    s = socket(AF_INET, SOCK_STREAM, 0 );
+    if ( s < 0 ) {
+        fprintf(stderr, "Socket creation error.\n");
+        exit(12);
+    }
+    else
+        printf("Socket creation done.\n");
+    setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof on);
+    setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (char *)&on, sizeof on);
+
+    /********************** Connecting ***************************/
+    err = connect( s, (struct sockaddr *) &server, server_size);
+    if ( err < 0 ) {
+        fprintf(stderr, "Connection error.\n");
+        exit(13);
+    }
+    else
+        printf("Connection done.\n");
+    
+    
+    /******************** Receiving data *************************/
+    
+    bytes = recv(s, buffer, BUFSIZE, flag);
+    if ( bytes <= 0 ) {
+        fprintf(stderr, "Receive error.\n");
+        exit(15);
+        }
+    else
+        printf("%s\n",buffer);
+        close(s);
+        return 0;
+    
+    
+    /********************** Sending data *************************/
+    
+    bytes = send(s, buffer, strlen(buffer)+1, flag);
+    if ( bytes <= 0 ) {
+        fprintf(stderr, "Sending error.\n");
+        exit(14);
+        }
+    else
+        printf("Sending done.\n");
+        
+    
+       
 }
     
 
@@ -141,7 +207,7 @@ int main(int argc, char *argv[])
             run_ipchecking=0;
     }
     
-    //communication(port,ip_address);
+    communication(port,ip_address);
     
     
     return 0;
