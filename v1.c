@@ -37,10 +37,11 @@ int checkipaddress(char *a)
     {
         error=1;
         fprintf(stderr,"Invalid IP address!\n");
-        return error;
+        
     }
     else
-    {        
+    {  
+        
         token=strtok(a,".");
         int sv=atoi(token);
         if(sv>255)
@@ -60,24 +61,20 @@ int checkipaddress(char *a)
         
         if(error!=0)
         {
-            fprintf(stderr,"Invalid IP address!\n");
-            return error; 
+            fprintf(stderr,"Invalid IP address!\n");            
         }
         else
         {
             printf("IP address looks valid! The program will try to connect to that device...\n");
             error=0;
-            return error;
         }
     }
+    return error;
         
 }
 
 int communication(int x, char *b)
 {
-    //Ez a kódrész Varga Imre tanár úr jegyzeteiben megtalálható a minimal socket program
-    
-    
     /************************** Declarations ********************/
     int s;                            // socket ID
     int flag;                         // transmission flag
@@ -96,7 +93,7 @@ int communication(int x, char *b)
     server.sin_port        = htons(x);
     server_size = sizeof server;
 
-    /********************** Creating socket **********************/
+    //********************** Creating socket **********************/
     s = socket(AF_INET, SOCK_STREAM, 0 );
     if ( s < 0 ) {
         fprintf(stderr, "Socket creation error.\n");
@@ -115,23 +112,9 @@ int communication(int x, char *b)
     }
     else
         printf("Connection done.\n");
-    
-    
-    /******************** Receiving data *************************/
-    
-    bytes = recv(s, buffer, BUFSIZE, flag);
-    if ( bytes <= 0 ) {
-        fprintf(stderr, "Receive error.\n");
-        exit(15);
-        }
-    else
-        printf("%s\n",buffer);
-        close(s);
-        return 0;
-    
-    
+
     /********************** Sending data *************************/
-    
+
     bytes = send(s, buffer, strlen(buffer)+1, flag);
     if ( bytes <= 0 ) {
         fprintf(stderr, "Sending error.\n");
@@ -139,8 +122,20 @@ int communication(int x, char *b)
         }
     else
         printf("Sending done.\n");
-        
     
+    /******************** Receiving data *************************/
+
+    bytes = recv(s, buffer, BUFSIZE, flag);
+    if ( bytes <= 0 ) {
+        fprintf(stderr, "Receive error.\n");
+        exit(15);
+        }
+    else
+        printf("Receive done.\n");
+        close(s);
+        return 0;
+
+
        
 }
     
@@ -154,9 +149,11 @@ int main(int argc, char *argv[])
     int run_input=1; // beolvasáskor mikor kéri a számot annak a futásának az irányítására
     int run_ipchecking=1; //ip cím ellenőrzés céljából
     char ip_address[30]; //ip cím itt van eltárolva ellenőrzés
+    char check_ip_address[30];
     int port=0; // portnak a száma melyen a kommunikációt fogja végezni
     
     //end of variables//
+    
     
     printf("//////////////\n");
     printf("/ Program v0 /\n");
@@ -201,12 +198,11 @@ int main(int argc, char *argv[])
         printf("Enter the target IP address example(192.168.10.69): ");
         scanf("%s",ip_address);
         printf("Checking IP address...\n");
-        int sv=checkipaddress(ip_address);
-        printf("%d",sv);
+        strcpy(check_ip_address,ip_address);
+        int sv=checkipaddress(check_ip_address);        
         if(sv==0)
             run_ipchecking=0;
     }
-    
     communication(port,ip_address);
     
     
