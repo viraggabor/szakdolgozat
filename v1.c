@@ -40,8 +40,7 @@ int checkipaddress(char *a)
         
     }
     else
-    {  
-        
+    {          
         token=strtok(a,".");
         int sv=atoi(token);
         if(sv>255)
@@ -84,8 +83,11 @@ int main(int argc, char *argv[])
     int connection_type=0; // 1- telnet 2- ssh 3- serial
     int run_input=1; // beolvasáskor mikor kéri a számot annak a futásának az irányítására
     int run_ipchecking=1; //ip cím ellenőrzés céljából
-    char ip_address[30]; //ip cím itt van eltárolva ellenőrzés
-    char check_ip_address[30];
+    char ip_address[30]=""; //ip cím itt van eltárolva ellenőrzés
+    char check_ip_address[30]="";
+    char login_name_ssh[40]="";
+    char domain_name[100]="";
+    char text[100]="";
     
     
     //end of variables//
@@ -129,12 +131,27 @@ int main(int argc, char *argv[])
     {
         case 1:
             printf("Your chosen connection type is Telnet!\n");
-            char text[100]="telnet ";
+            strcpy(text,"telnet ");
             strcat(text,ip_address);  
             system(text);
         break;
         case 2:
             printf("Your chosen connection type is SSH!\n");
+            printf("Login name for ssh: ");
+            scanf("%s",login_name_ssh);
+            printf("SSH domain name (if you don't know type 0): ");
+            scanf("%s",domain_name);
+            printf("%d",strlen(domain_name));
+            strcpy(text,"ssh ");
+            strcat(text,login_name_ssh);
+            strcat(text,"@");
+            if(strcmp(domain_name,"0")==0)
+                strcat(text,ip_address);
+            else
+                strcat(text,domain_name);
+            system(text);    
+            
+            
         break;
         case 3:
             printf("Your chosen connection type is Serial!\n");
