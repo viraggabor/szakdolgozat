@@ -21,59 +21,77 @@ int checkipaddress(char *a)
     int error=0; 
     int dot_cnt=0;// pontokat számoljuk meg tehát ha a pontok száma nem 3. akkor érvénytelen a cím
     char *token; // karakter tömb splitelésekor lesz felhasználva
+    int dns=0; //dns vagy sem 1 igen 0 nem
+    int onlychar=0; // 0 -> számok és speciális karakterből áll || 1 -> betűkből és spec karakterekből áll || 2 -> van benne szám is meg betű is 
+    
     for(int i=0;i<strlen(a);i++)
     {
-        char sv=a[i];
-        if(sv=='.')
-            dot_cnt++;
-        if(sv!='1' && sv!='2' && sv!='3' && sv!='4' && sv!='5' && sv!='6' && sv!='7' && sv!='8' && sv!='9' && sv!='0' && sv!='.')
-        {
-            error=1;
-            fprintf(stderr,"Invalid IP address!\n");
-            return error;
-        }
+        if(a[i]>96 && a[i]<123)
+            onlychar=1;
+        
+        if(a[i]>47 && a[i]<58 && onlychar==1)
+            onlychar=2;
     }
-    if(dot_cnt!=3)
+    
+    switch(onlychar)
     {
-        error=1;
-        fprintf(stderr,"Invalid IP address!\n");
+        case 0:
+            for(int i=0;i<strlen(a);i++)
+            {
+                if(a[i]=='.')
+                    dot_cnt++;
+            }
+            if(dot_cnt!=3)
+            {
+                error=1;
+                fprintf(stderr,"Invalid IP address!\n");                
+            }
+            else
+            {          
+                token=strtok(a,".");
+                int sv=atoi(token);
+                
+                if(sv>255 || sv==127)
+                    error++;
+                token=strtok(NULL,".");
+                sv=atoi(token);
+                if(sv>255)
+                    error++;    
+                token=strtok(NULL,".");
+                sv=atoi(token);
+                if(sv>255)
+                    error++;
+                token=strtok(NULL,".");
+                sv=atoi(token);
+                if(sv>255)
+                    error++;
+                
+                if(error!=0)
+                {
+                    fprintf(stderr,"Invalid IP address!\n");            
+                }
+                else
+                {
+                    printf("IP address looks valid! The program will try to connect to that device...\n");
+                    error=0;
+                }
+            }                
+        break;
         
-    }
-    else
-    {          
-        token=strtok(a,".");
-        int sv=atoi(token);
-        if(sv>255)
-            error++;
-        token=strtok(NULL,".");
-        sv=atoi(token);
-        if(sv>255)
-            error++;    
-        token=strtok(NULL,".");
-        sv=atoi(token);
-        if(sv>255)
-            error++;
-        token=strtok(NULL,".");
-        sv=atoi(token);
-        if(sv>255)
-            error++;
-        
-        if(error!=0)
-        {
-            fprintf(stderr,"Invalid IP address!\n");            
-        }
-        else
-        {
-            printf("IP address looks valid! The program will try to connect to that device...\n");
+        case 1:
             error=0;
-        }
+            printf("Hostname looks valid! The program will try to connect to that device...\n");
+        break;
+        
+        default:
+            fprintf(stderr,"Invalid target try again!\n");
+            error=1;
     }
+    
     return error;
         
 }
 
-
-    
 
 int main(int argc, char *argv[])
 {
@@ -118,13 +136,16 @@ int main(int argc, char *argv[])
     
     while(run_ipchecking)
     {
-        printf("Enter the target IPv4 address example(192.168.10.69): ");
+        printf("Enter the target IPv4 address or the hostname: ");
         scanf("%s",ip_address);
-        printf("Checking IP address...\n");
+        printf("Checking...\n");
         strcpy(check_ip_address,ip_address);
-        int sv=checkipaddress(check_ip_address);        
+        int sv=checkipaddress(check_ip_address);          
         if(sv==0)
+        {
             run_ipchecking=0;
+        }
+            
     }
     
     switch(connection_type)
@@ -138,19 +159,12 @@ int main(int argc, char *argv[])
         case 2:
             printf("Your chosen connection type is SSH!\n");
             printf("Login name for ssh: ");
-            scanf("%s",login_name_ssh);
-            printf("SSH domain name (if you don't know type 0): ");
-            scanf("%s",domain_name);
-            printf("%d",strlen(domain_name));
+            scanf("%s",login_name_ssh);                       
             strcpy(text,"ssh ");
             strcat(text,login_name_ssh);
             strcat(text,"@");
-            if(strcmp(domain_name,"0")==0)
-                strcat(text,ip_address);
-            else
-                strcat(text,domain_name);
-            system(text);    
-            
+            strcat(text,ip_address);
+            system(text);                
             
         break;
         case 3:
@@ -160,13 +174,6 @@ int main(int argc, char *argv[])
       default :
          fprintf(stderr,"Invalid input!\n");
     }
-    
-    
-    
-    
-    
-    
-    
     
     return 0;
 }
