@@ -12,85 +12,13 @@
 #include <malloc.h>
 #include <omp.h>
 #include <fcntl.h>
+#include <termios.h>
+
+#include "mymiscs.h" //ellenőrző fv-ek, titkosítás, 
+                    
 
 #define N 1000
 #define BUFSIZE 1024                 // Max length of buffer
-
-int checkipaddress(char *a)
-{
-    int error=0; 
-    int dot_cnt=0;// pontokat számoljuk meg tehát ha a pontok száma nem 3. akkor érvénytelen a cím
-    char *token; // karakter tömb splitelésekor lesz felhasználva
-    int dns=0; //dns vagy sem 1 igen 0 nem
-    int onlychar=0; // 0 -> számok és speciális karakterből áll || 1 -> betűkből és spec karakterekből áll || 2 -> van benne szám is meg betű is 
-    
-    for(int i=0;i<strlen(a);i++)
-    {
-        if(a[i]>96 && a[i]<123)
-            onlychar=1;
-        
-        if(a[i]>47 && a[i]<58 && onlychar==1)
-            onlychar=2;
-    }
-    
-    switch(onlychar)
-    {
-        case 0:
-            for(int i=0;i<strlen(a);i++)
-            {
-                if(a[i]=='.')
-                    dot_cnt++;
-            }
-            if(dot_cnt!=3)
-            {
-                error=1;
-                fprintf(stderr,"Invalid IP address!\n");                
-            }
-            else
-            {          
-                token=strtok(a,".");
-                int sv=atoi(token);
-                
-                if(sv>255 || sv==127)
-                    error++;
-                token=strtok(NULL,".");
-                sv=atoi(token);
-                if(sv>255)
-                    error++;    
-                token=strtok(NULL,".");
-                sv=atoi(token);
-                if(sv>255)
-                    error++;
-                token=strtok(NULL,".");
-                sv=atoi(token);
-                if(sv>255)
-                    error++;
-                
-                if(error!=0)
-                {
-                    fprintf(stderr,"Invalid IP address!\n");            
-                }
-                else
-                {
-                    printf("IP address looks valid! The program will try to connect to that device...\n");
-                    error=0;
-                }
-            }                
-        break;
-        
-        case 1:
-            error=0;
-            printf("Hostname looks valid! The program will try to connect to that device...\n");
-        break;
-        
-        default:
-            fprintf(stderr,"Invalid target try again!\n");
-            error=1;
-    }
-    
-    return error;
-        
-}
 
 
 int main(int argc, char *argv[])
@@ -106,15 +34,81 @@ int main(int argc, char *argv[])
     char login_name_ssh[40]="";
     char domain_name[100]="";
     char text[100]="";
-    
+    FILE *f= fopen("login.txt","r");
+    int i=0; 
+    char sv='0';
+    int cnt=0;
+    int success=1;
     
     //end of variables//
     
     
     printf("//////////////\n");
-    printf("/ Program v0 /\n");
+    printf("/Program v0.5/\n");
     printf("//////////////\n");
     
+    
+    while(success)
+    {
+        cnt=0;
+        char login_name[30]=""; 
+        char login_pw[30]="";   
+        printf("Login: ");
+        while(cnt!=2)
+        {
+            if(cnt==0)
+            {
+                sv = getch();
+                if(sv!='\n'){
+                    login_name[i]=sv;
+                    i++;  
+                }
+                else
+                {
+                    cnt++;
+                    i=0;
+                    if(cnt==1)
+                        printf("\nPassword: ");
+                }
+            }
+            if(cnt==1)
+            {
+                sv = getch();
+                if(sv!='\n')
+                {
+                    login_pw[i]=sv;
+                    i++;
+                }
+                else
+                {   
+                    i=0;
+                    cnt++;
+                }
+            }
+        }
+        char line[60]="";
+        char *token;
+        char name_sv[30]="";
+        char pw_sv[30]="";
+        while(fgets(line,60,f))
+        {
+            token=strtok(line," ");
+            strcpy(name_sv,token);
+            token=strtok(NULL,"\n");
+            strcpy(pw_sv,token);
+            if((strcmp(login_name,name_sv)==0)&& (strcmp(login_pw,pw_sv)==0)) 
+            {
+                success=0;            
+            }
+            
+        }
+        if(success==1)
+                fprintf(stderr,"\nFailed login attempt! Try again!\n");
+        rewind(f);
+    }
+    printf("\nSuccessful login!\n");
+    fclose(f);
+    printf("-----------------------\n\n");
     
     printf("1 - Telnet\n");
     printf("2 - SSH\n");
