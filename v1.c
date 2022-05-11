@@ -35,7 +35,9 @@ int main(int argc, char *argv[])
     char domain_name[100]="";
     char text[100]="";
     FILE *f= fopen("login.txt","r");
-    int i=0; 
+    int i=0;
+    int j=0;
+    int key[5]={1,-4,9,14,-1};
     char sv='0';
     int cnt=0;
     int success=1;
@@ -92,7 +94,18 @@ int main(int argc, char *argv[])
         char pw_sv[30]="";
         while(fgets(line,60,f))
         {
-            token=strtok(line," ");
+            j=0;
+            char changed_line[60]="";
+            if(line[strlen(line)-1]=='\n')
+                line[strlen(line)-1]='\0';
+            for(int i=0;i<strlen(line);i++)
+            {
+                if(j==5)
+                    j=0;
+                changed_line[i]=line[i]-key[j];  
+                j++;        
+            }
+            token=strtok(changed_line," ");
             strcpy(name_sv,token);
             token=strtok(NULL,"\n");
             strcpy(pw_sv,token);
