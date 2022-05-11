@@ -9,7 +9,8 @@ A program LINUX alatt müködik. Futtatása:
 1, a program fordítása gcc-vel (gcc <program neve>.c) -> ha így futtatjuk egy a.out fájl jön létre
 2, ./a.out -> ezzel futtatjuk a programot
   
-A program elindításakor ki tudjuk választani milyen kapcsolatot akarunk kialakítani. Itt ennek megfelelően megadjuk a hozzátartozó számot.
+A program elindításakor be kell jelentkezni a felületre, mely naplózásra kerül
+Ezután ki tudjuk választani milyen kapcsolatot akarunk kialakítani. Itt ennek megfelelően megadjuk a hozzátartozó számot.
 Jelenleg a serial kapcsolat nem müködik.
 Ezután megadjuk a konfigurálásra használandó eszköz ip címét. 
 
