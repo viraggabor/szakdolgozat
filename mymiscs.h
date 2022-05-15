@@ -31,8 +31,6 @@ int getche(void) // * irat ki
     return ch;
 }
 
-
-
 int checkipaddress(char *a)
 {
     int error=0; 
@@ -109,5 +107,56 @@ int checkipaddress(char *a)
         
 }
 
+void logs(char* name, char* ip)
+{
+    FILE *f=fopen("logs.txt","a");    
+    time_t t;   
+    time(&t);
+    fprintf(f,"Login: %s\t Target IP address: %s\t Time: %s",name,ip,ctime(&t));    
+    fclose(f);
+}
 
+/* kodoló
+    FILE *f=fopen("login.txt","r");
+    FILE *g=fopen("coded.txt","w");
+    while(fgets(sor,60,f))
+    {
+        j=0;
+        if(sor[strlen(sor)-1]=='\n')
+            sor[strlen(sor)-1]='\0';
+        char changed_line[60]="";
+        for(int i=0;i<strlen(sor);i++)
+        {
+            if(j==5)
+                j=0;
+            changed_line[i]=sor[i]+key[j];  
+            j++;        
+        }
+        fprintf(g,"%s\n",changed_line);        
+    }
+
+-------dekodoló---------
+
+
+    FILE *h=fopen("coded.txt","r");
+    while(fgets(sor,60,h))
+    {
+        j=0;
+        char changed_line[60]="";
+        if(sor[strlen(sor)-1]=='\n')
+            sor[strlen(sor)-1]='\0';
+        for(int i=0;i<strlen(sor);i++)
+        {
+            if(j==5)
+                j=0;
+            changed_line[i]=sor[i]-key[j];  
+            j++;        
+        }
+        printf("%s\n",changed_line);   
+    }
+
+    //fclose(f);
+    //fclose(g);
+    fclose(h);*/
+ 
 #endif /* mymiscs.h */
