@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
     char login_name_ssh[40]="";
     char domain_name[100]="";
     char text[100]="";
+    char login[30]="";
     FILE *f= fopen("login.txt","r");
     int i=0;
     int j=0;
@@ -111,12 +112,16 @@ int main(int argc, char *argv[])
             strcpy(pw_sv,token);
             if((strcmp(login_name,name_sv)==0)&& (strcmp(login_pw,pw_sv)==0)) 
             {
-                success=0;            
+                success=0; 
+                strcpy(login,login_name);
             }
             
         }
         if(success==1)
-                fprintf(stderr,"\nFailed login attempt! Try again!\n");
+        {
+            fprintf(stderr,"\nFailed login attempt! Try again!\n");
+            logs(login_name,"-");
+        }
         rewind(f);
     }
     printf("\nSuccessful login!\n");
@@ -151,6 +156,7 @@ int main(int argc, char *argv[])
         if(sv==0)
         {
             run_ipchecking=0;
+            logs(login,ip_address);
         }
             
     }
@@ -181,6 +187,9 @@ int main(int argc, char *argv[])
       default :
          fprintf(stderr,"Invalid input!\n");
     }
+    
+    
+    
     
     return 0;
 }
