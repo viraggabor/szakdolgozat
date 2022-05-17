@@ -63,8 +63,16 @@ int main(int argc, char *argv[])
             {
                 sv = getch();
                 if(sv!='\n'){
-                    login_name[i]=sv;
-                    i++;  
+                    if(sv==8 || sv==127)
+                    {
+                        i--;
+                        login_name[i]=' ';
+                    }
+                    else
+                    {
+                        login_name[i]=sv;
+                        i++;
+                    }
                 }
                 else
                 {
@@ -79,8 +87,16 @@ int main(int argc, char *argv[])
                 sv = getch();
                 if(sv!='\n')
                 {
-                    login_pw[i]=sv;
-                    i++;
+                    if(sv==8 || sv==127) // 127 oka: https://stackoverflow.com/questions/4363309/how-to-check-for-the-backspace-character-in-c
+                    {
+                        i--;
+                        login_pw[i]=' ';
+                    }
+                    else
+                    {
+                        login_pw[i]=sv;
+                        i++;
+                    }
                 }
                 else
                 {   
