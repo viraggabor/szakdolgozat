@@ -107,56 +107,47 @@ int checkipaddress(char *a)
         
 }
 
-void logs(char* name, char* ip)
+void logs(char* name, char* line, int i)
 {
-    FILE *f=fopen("logs.txt","a");    
+    FILE *f=fopen("connections.txt","a");    
     time_t t;   
     time(&t);
-    fprintf(f,"Login: %s\t Target IP address: %s\t Time: %s",name,ip,ctime(&t));    
+    switch(i)
+    {
+        // login ->i=0 logout -> 1 failed -> 2 
+        case 0: 
+            fprintf(f,"LOGIN\t%s\t%s\t%s",name,line,ctime(&t)); 
+        break;
+        case 1: 
+            fprintf(f,"LOGOUT\t%s\t%s\t%s",name,line,ctime(&t)); 
+        break;
+        case 2: 
+            fprintf(f,"FAILED LOGIN\t%s\t%s",name,ctime(&t)); 
+        break;
+        
+        default:
+            fprintf(f,"ERROR"); 
+        
+    }
+    
     fclose(f);
 }
 
-/* kodoló
-    FILE *f=fopen("login.txt","r");
-    FILE *g=fopen("coded.txt","w");
-    while(fgets(sor,60,f))
-    {
-        j=0;
-        if(sor[strlen(sor)-1]=='\n')
-            sor[strlen(sor)-1]='\0';
-        char changed_line[60]="";
-        for(int i=0;i<strlen(sor);i++)
-        {
-            if(j==5)
-                j=0;
-            changed_line[i]=sor[i]+key[j];  
-            j++;        
-        }
-        fprintf(g,"%s\n",changed_line);        
-    }
+void printlines()
+{
+    printf("--------------------------\n");
+    printf("-    Terminal Server     -\n");
+    printf("--------------------------\n");
+    printf("\n----------------------\n");
+    printf("1   - Connect to line 1\n");
+    printf("2   - Connect to line 2\n");
+    printf("3   - Connect to line 3\n");
+    printf("4   - Connect to line 4\n");
+    printf("----------------------\n");
+    printf("10  - Show empty lines\n");
+    printf("11  - History\n");
+    printf("12  - Cleaning screen\n");
+    printf("13  - Close Program\n\n");
+}
 
--------dekodoló---------
-
-
-    FILE *h=fopen("coded.txt","r");
-    while(fgets(sor,60,h))
-    {
-        j=0;
-        char changed_line[60]="";
-        if(sor[strlen(sor)-1]=='\n')
-            sor[strlen(sor)-1]='\0';
-        for(int i=0;i<strlen(sor);i++)
-        {
-            if(j==5)
-                j=0;
-            changed_line[i]=sor[i]-key[j];  
-            j++;        
-        }
-        printf("%s\n",changed_line);   
-    }
-
-    //fclose(f);
-    //fclose(g);
-    fclose(h);*/
- 
 #endif /* mymiscs.h */
