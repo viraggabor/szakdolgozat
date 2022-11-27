@@ -171,7 +171,7 @@ int main()
                 logs(login,"line1",1);
                 }
                 else
-                    fprintf(stderr,"This line is taken try another one\n");
+                    fprintf(stderr,"This line is taken try another one");
                     
                 break;
             case 2: //line2
@@ -183,7 +183,7 @@ int main()
                 logs(login,"line2",1);
                 }
                 else
-                    fprintf(stderr,"This line is taken try another one\n");
+                    fprintf(stderr,"This line is taken try another one");
                     
                 break;
             case 3: //line3
@@ -195,7 +195,7 @@ int main()
                     logs(login,"line3",1);
                 }
                 else
-                    fprintf(stderr,"This line is taken try another one\n");
+                    fprintf(stderr,"This line is taken try another one");
                 
                 break;
             case 4: //line4
@@ -207,7 +207,7 @@ int main()
                     logs(login,"line4",1);
                 }
                 else
-                    fprintf(stderr,"This line is taken try another one\n");
+                    fprintf(stderr,"This line is taken try another one");
                 
                 break;
             case 5: //line5
@@ -219,7 +219,7 @@ int main()
                     logs(login,"line5",1);
                 }
                 else
-                    fprintf(stderr,"This line is taken try another one\n");
+                    fprintf(stderr,"This line is taken try another one");
                 
                 break;
             case 6: //line6
@@ -231,10 +231,10 @@ int main()
                     logs(login,"line6",1);
                 }
                 else
-                    fprintf(stderr,"This line is taken try another one\n");
+                    fprintf(stderr,"This line is taken try another one");
                 
                 break;
-            case 7: //line7
+            case 7: //line5
                 emptyline=line_empty(7);
                 if(emptyline==1)
                 {
@@ -243,7 +243,7 @@ int main()
                     logs(login,"line7",1);
                 }
                 else
-                    fprintf(stderr,"This line is taken try another one\n");
+                    fprintf(stderr,"This line is taken try another one");
                 
                 break;
             case 8: //line5
@@ -255,7 +255,7 @@ int main()
                     logs(login,"line8",1);
                 }
                 else
-                    fprintf(stderr,"This line is taken try another one\n");
+                    fprintf(stderr,"This line is taken try another one");
                 
                 break;
             case 100: //empty lines
@@ -299,10 +299,123 @@ int main()
                 
                 break;
             
-            case 101: //active users  
+            case 101: //power outlet manager  
                 
+                system("clear");
+                printf("------------\n");
+                printf("-APC config-\n");
+                printf("------------\n");
+                int outlet_value=0;
+                int outlet_checker_run=1;
+                int outlet_command=0;
+                int outlet_event_run=1;
+                //int outlet_event=0;
+                int apc_run=1;
                 
-                
+                while(apc_run)
+                {
+                    while(outlet_checker_run)
+                    {
+                        printf("Choose outlet <1-8>\n");
+                        printf("9 - Outlet status\n");
+                        printf("10 - Back\n");
+                        scanf("%d",&outlet_value);
+                        if(outlet_value<0 || outlet_value>10)
+                            fprintf(stderr,"Invalid input!\n");
+                        else
+                        {
+                            if(outlet_value==10)
+                            {
+                                outlet_checker_run=0;
+                                apc_run=0;
+                                outlet_event_run=0;
+                            }
+                            else if(outlet_value==9)
+                                system("apc --status");
+                            else
+                                outlet_checker_run=0;
+                        }
+                        
+                    }
+                    while(outlet_event_run)
+                    {
+                        printf("------------------------\n");
+                        printf("Your chosen outlet: %d \n",outlet_value);
+                        printf("------------------------\n");
+                        printf("1 - Power on\n");
+                        printf("2 - Power off\n");
+                        printf("3 - Reboot device\n");
+                        printf("4 - Back\n");
+                        scanf("%d",&outlet_command);
+                        if(outlet_command==4) //back
+                        {
+                            outlet_event_run=0;
+                            outlet_checker_run=1;
+                            
+                        }
+                        else if(outlet_command==3) //reboot
+                        {
+                            if(outlet_value==1)
+                                system("apc --reboot 1");
+                            else if(outlet_value==2)
+                                system("apc --reboot 2");
+                            else if(outlet_value==3)
+                                system("apc --reboot 3");
+                            else if(outlet_value==4)
+                                system("apc --reboot 4");
+                            else if(outlet_value==5)
+                                system("apc --reboot 5");
+                            else if(outlet_value==6)
+                                system("apc --reboot 6");
+                            else if(outlet_value==7)
+                                system("apc --reboot 7");
+                            else if(outlet_value==8)
+                                system("apc --reboot 8");                            
+                        }
+                        else if(outlet_command==2) //off
+                        {
+                            if(outlet_value==1)
+                                system("apc --off 1");
+                            else if(outlet_value==2)
+                                system("apc --off 2");
+                            else if(outlet_value==3)
+                                system("apc --off 3");
+                            else if(outlet_value==4)
+                                system("apc --off 4");
+                            else if(outlet_value==5)
+                                system("apc --off 5");
+                            else if(outlet_value==6)
+                                system("apc --off 6");
+                            else if(outlet_value==7)
+                                system("apc --off 7");
+                            else if(outlet_value==8)
+                                system("apc --off 8");
+                        }
+                        else if(outlet_command==1) //on
+                        {
+                            if(outlet_value==1)
+                                system("apc --on 1");
+                            else if(outlet_value==2)
+                                system("apc --on 2");
+                            else if(outlet_value==3)
+                                system("apc --on 3");
+                            else if(outlet_value==4)
+                                system("apc --on 4");
+                            else if(outlet_value==5)
+                                system("apc --on 5");
+                            else if(outlet_value==6)
+                                system("apc --on 6");
+                            else if(outlet_value==7)
+                                system("apc --on 7");
+                            else if(outlet_value==8)
+                                system("apc --on 8");
+                        }
+                    }
+                    
+                    
+                }
+                system("clear");
+                printlines();
                 break;
                 
             case 102: //history
