@@ -6,15 +6,49 @@ The v2 version of the server program in python
 """
 #imports
 from getpass import getpass
-import math
+from datetime import datetime
+import os
 
 #variables
 run_program=True # True = run false = stop
-state_line=[False , True , True , True , False , True , True , True , True]
+state_line=[True , True , True , True , True , True , True , True , True]
 u_name=''
 u_pw=''
 
 #functions
+
+def line_status(state_line):
+    
+    f=open('logs.txt','r')
+    for line in f:
+        sv=line.split('\t')
+        if sv[0]=='LOGIN':
+            state_line[int(sv[2])-1]=False          
+        
+        elif sv[0]=='LOGOUT':
+            state_line[int(sv[2])-1]=True
+        
+def clear_screen():
+    os.system('clear')
+    printlines('menu')
+    
+def logs(u_name,line,status):
+    dt = datetime.now()
+    timestamp = datetime.timestamp(dt)
+    date_time = datetime.fromtimestamp(timestamp)
+    str_date_time = date_time.strftime("%H:%M:%S %d-%m-%Y\n")
+    f=open("logs.txt","a")
+    if status=='LOGIN':
+        f.write('LOGIN\t'+u_name+'\t'+line+'\t'+str_date_time)
+    elif status=='LOGOUT':
+        f.write('LOGOUT\t'+u_name+'\t'+line+'\t'+str_date_time)
+    elif status=='FAILED LOGIN':
+        f.write('FAILED LOGIN\t'+u_name+'\t\t'+str_date_time)
+    else:
+        print('ERROR')    
+    
+    f.close()
+
 def login():
     login_run=True
     global u_name
@@ -48,9 +82,10 @@ def login():
             f.seek(0)
         if login_succ==1:
             print("Successful login!")
-            login_run=False
+            login_run=False            
         else:
             print('Failed login attempt! Try again!')
+            logs(u_name,'line','FAILED LOGIN')
         f.close()
 
 def printlines(label):
@@ -75,22 +110,25 @@ def printlines(label):
         print('Help is on the way')
     
     elif label=='apc':
-       print('------------')
-       print('-APC config-')
-       print('------------')
-       print('Choose outlet <1-8>')
-       print('9 - Outlet status')
-       print('10 - Back')
+        print('------------')
+        print('-APC config-')
+        print('------------')
+        print('Choose outlet <1-8>')
+        print('9 - Outlet status')
+        print('10 - Back')
 
 
 def commands(x):
     if x>=1 and x<10: #connect to line 1-10
         if state_line[x-1]==True:
-            print('Connecting to Line ',x)
-            #system("sudo minicom line1")   
-            sv='sudo minicom line'+str(x)
-            print(sv)
             state_line[x-1]=False
+            print('Connecting to Line ',x) 
+            logs(u_name,str(x),'LOGIN')
+            sv='sudo minicom line'+str(x)
+            print(sv) 
+            #os.system(sv)
+            logs(u_name,str(x),'LOGOUT')
+            state_line[x-1]=True
         else:
             print('This line is taken try another!')
     
@@ -123,10 +161,10 @@ def commands(x):
                         apc_command=False
                         apc_run=False
                         apc_event=False
-                        #system clear
-                        printlines('menu')
+                        clear_screen()
+                        #printlines('menu')
                     elif apc_command_input==9:
-                        #system apc --status
+                        #os.system('apc --status')
                         print('Status')
                     else:                        
                         apc_command=False
@@ -153,34 +191,34 @@ def commands(x):
                         printlines('apc')
                     
                     elif apc_event_input==3: #reboot
-                        sv="apc --reboot "+str(outlet_value)
-                        #•system reboot
+                        sv='apc --reboot '+str(outlet_value)
+                        #os.system(sv)
                         print(sv)
                     
                     elif apc_event_input==2: #off
-                        sv="apc --off "+str(outlet_value)
-                        #•system reboot
+                        sv='apc --off '+str(outlet_value)
+                        #os.system(sv)
                         print(sv)
                     
-                    elif apc_event_input==3: #on
-                        sv="apc --on "+str(outlet_value)
-                        #•system reboot
+                    elif apc_event_input==1: #on
+                        sv='apc --on '+str(outlet_value)
+                        #os.system(sv)
                         print(sv)
                     
                         
     elif x==12: #history
-        f=open('connections.txt','r')
+        f=open('logs.txt','r')
         print('-----------\n',u_name,'earlier sessions\n-----------')
         for line in f:
             line=line.replace(line[len(line)-1],'')
             fields=line.split('\t')
             if fields[0]=='LOGIN':
                 if fields[1]==u_name:
-                    print(fields[2],fields[3])
+                    print('line'+str(fields[2]),fields[3])
         f.close()
         
     elif x==13: #clear screen
-        #system clear
+        #clear_screen()
         printlines('menu')
     
     elif x==14: #print help
@@ -192,12 +230,13 @@ def commands(x):
     return x
         
 if __name__ == "__main__":
+    line_status(state_line)
     login()
     printlines('menu')
     
     while run_program:
         x=int(input('Enter your input: '))  
-        if x<1 or x>106:
+        if x<1 or x>16:
             print('Invalid input')
         else:
             x=commands(x)
